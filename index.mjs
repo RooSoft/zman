@@ -1,18 +1,17 @@
 import { readConfig } from './lib/yaml.mjs'
-import { getSnapshots } from './lib/zfs/index.mjs'
+import { getRelatedSnapshots, getExpiredSnapshots, getOverdueSnapshots } from './lib/business/snapshotFilter.mjs'
 
 const zmanConfig = readConfig('./zman.yaml')
-let snapshots = {}
 
-zmanConfig.pools.forEach(poolConfig => {
-  const poolSnapshots = snapshots[poolConfig.name] = {}
+const snapshots = getRelatedSnapshots(zmanConfig)
 
-  poolConfig.frequencies.forEach(frequency => {
-    const frequencySnapshots = poolSnapshots[frequency.type] = []
-    const snapshot = getSnapshots(poolConfig.name, frequency.type)
-
-    frequencySnapshots.push(snapshot)
-  })
-})
+const expiredSnapshots = getExpiredSnapshots(snapshots)
+const overdueSnapshots = getOverdueSnapshots(snapshots)
 
 console.dir(snapshots, { depth: null })
+console.log('expired snapshots')
+console.log('-----------------')
+console.dir(expiredSnapshots)
+console.log('overdue snapshots')
+console.log('-----------------')
+console.dir(overdueSnapshots)
