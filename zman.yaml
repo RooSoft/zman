@@ -1,0 +1,11 @@
+---
+pools:
+- name: smallpool/zman
+  frequencies:
+    - type: monthly
+      quantity: 3
+    - type: daily
+      quantity: 31
+    - type: hourly
+      quantity: 24
+
