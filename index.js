@@ -1,5 +1,5 @@
-import { readConfig } from './lib/yaml.mjs'
-import { getRelatedSnapshots, getExpiredSnapshots, getOverdueStatuses } from './lib/business/snapshotFilter.mjs'
+const { readConfig } = require('./lib/yaml.js')
+const { getRelatedSnapshots, getExpiredSnapshots, getOverdueStatuses } = require('./lib/business/snapshotFilter.js')
 
 const zmanConfig = readConfig('./zman.yaml')
 
