@@ -3,12 +3,13 @@ import { getRelatedSnapshots, getExpiredSnapshots, getOverdueSnapshots } from '.
 
 const zmanConfig = readConfig('./zman.yaml')
 
-const snapshots = getRelatedSnapshots(zmanConfig)
+const poolSnapshots = getRelatedSnapshots(zmanConfig)
 
-const expiredSnapshots = getExpiredSnapshots(snapshots)
-const overdueSnapshots = getOverdueSnapshots(snapshots)
+const now = new Date()
 
-console.dir(snapshots, { depth: null })
+const expiredSnapshots = getExpiredSnapshots(now, zmanConfig, poolSnapshots)
+const overdueSnapshots = getOverdueSnapshots(now, zmanConfig, poolSnapshots)
+
 console.log('expired snapshots')
 console.log('-----------------')
 console.dir(expiredSnapshots)
