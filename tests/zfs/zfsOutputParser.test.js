@@ -20,9 +20,7 @@ test('Should parse smallpool/zman monthly snapshots', () => {
 
   const poolSnapshots = getSnapshots(poolName, frequency, DUMMY_SNAPSHOT_OUTPUT)
 
-  if (poolSnapshots.length !== 4) {
-    throw new Error(`Should parse 4 shapshots, got ${poolSnapshots.length}`)
-  }
+  expect(poolSnapshots.length).toBe(4)
 })
 
 test('Should parse largepool/whatever daily snapshots', () => {
@@ -31,9 +29,7 @@ test('Should parse largepool/whatever daily snapshots', () => {
 
   const poolSnapshots = getSnapshots(poolName, frequency, DUMMY_SNAPSHOT_OUTPUT)
 
-  if (poolSnapshots.length !== 2) {
-    throw new Error(`Should parse 2 shapshots, got ${poolSnapshots.length}`)
-  }
+  expect(poolSnapshots.length).toBe(2)
 })
 
 test('Should parse largepool/whatever hourly snapshots', () => {
@@ -42,7 +38,5 @@ test('Should parse largepool/whatever hourly snapshots', () => {
 
   const poolSnapshots = getSnapshots(poolName, frequency, DUMMY_SNAPSHOT_OUTPUT)
 
-  if (poolSnapshots.length !== 1) {
-    throw new Error(`Should parse 1 shapshots, got ${poolSnapshots.length}`)
-  }
+  expect(poolSnapshots.length).toBe(1)
 })
