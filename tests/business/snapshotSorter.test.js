@@ -16,7 +16,7 @@ Tue Sept 29  14:14 2019  smallpool/zman@zman-monthly-2019-09-29-14:14      -   1
 Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   112K         -       -              -          -`
 
 
-test('Should correctly parse snapshots', () => {
+test('Should correctly sort snapshots by pool', () => {
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
 
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
