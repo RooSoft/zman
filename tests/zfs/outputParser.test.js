@@ -1,4 +1,8 @@
-const { getSnapshots } = require('../../lib/zfs/outputParser')
+const { readConfig } = require('../../lib/yaml')
+
+const { parseSnapshots } = require('../../lib/zfs/snapshotParser')
+const { sortSnapshotsByPool } = require('../../lib/business/snapshotSorter')
+const { getRelatedSnapshots } = require('../../lib/business/snapshotFilter')
 
 const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
@@ -14,29 +18,15 @@ Tue Aug 29  14:14 2019  smallpool/zman@zman-monthly-2019-08-29-14:14      -   11
 Tue Sept 29  14:14 2019  smallpool/zman@zman-monthly-2019-09-29-14:14      -   112K         -       -              -          -
 Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   112K         -       -              -          -`
 
-test('Should parse smallpool/zman monthly snapshots', () => {
-  const poolName = 'smallpool/zman'
-  const frequency = 'monthly'
 
-  const poolSnapshots = getSnapshots(poolName, frequency, DUMMY_SNAPSHOT_OUTPUT)
+test('Should correctly parse snapshots', () => {
+  const zmanConfig = readConfig('../../zman.yaml')
+  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  expect(poolSnapshots.length).toBe(4)
-})
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
 
-test('Should parse largepool/whatever daily snapshots', () => {
-  const poolName = 'largepool/whatever'
-  const frequency = 'daily'
-
-  const poolSnapshots = getSnapshots(poolName, frequency, DUMMY_SNAPSHOT_OUTPUT)
-
-  expect(poolSnapshots.length).toBe(2)
-})
-
-test('Should parse largepool/whatever hourly snapshots', () => {
-  const poolName = 'largepool/whatever'
-  const frequency = 'hourly'
-
-  const poolSnapshots = getSnapshots(poolName, frequency, DUMMY_SNAPSHOT_OUTPUT)
-
-  expect(poolSnapshots.length).toBe(1)
+  expect(poolSnapshots['smallpool/zman']['monthly'].length).toBe(4)
+  expect(poolSnapshots['largepool/whatever']['daily'].length).toBe(2)
+  expect(poolSnapshots['largepool/whatever']['hourly'].length).toBe(1)
 })

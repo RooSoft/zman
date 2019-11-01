@@ -1,6 +1,10 @@
-const { readConfig } = require('../../lib/yaml.js')
+const { readConfig } = require('../../lib/yaml')
+
+const { parseSnapshots } = require('../../lib/zfs/snapshotParser')
+const { sortSnapshotsByPool } = require('../../lib/business/snapshotSorter')
+const { getRelatedSnapshots } = require('../../lib/business/snapshotFilter')
+
 const { filterExpiredSnapshotsByDate } = require('../../lib/business/snapshotExpirationFilter')
-const { getRelatedSnapshots } = require('../../lib/business/snapshotFilter.js')
 
 const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
@@ -23,7 +27,9 @@ test('Should keep only expired largepool/whatever dailies', () => {
   const quantity = 30
 
   const zmanConfig = readConfig('../../zman.yaml')
-  const poolSnapshots = getRelatedSnapshots(zmanConfig)[poolName]
+  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)[poolName]
 
   const firstDate = new Date('2019-10-10')
   const firstExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, quantity, firstDate, poolSnapshots)

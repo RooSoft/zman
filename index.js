@@ -1,9 +1,15 @@
-const { readConfig } = require('./lib/yaml.js')
-const { getRelatedSnapshots, getExpiredSnapshots, getOverdueStatuses } = require('./lib/business/snapshotFilter.js')
+const { readConfig } = require('./lib/yaml')
+const snapshotOutput = require('./data/dummySnapshots')
+const { parseSnapshots } = require('./lib/zfs/snapshotParser')
+const { sortSnapshotsByPool } = require('./lib/business/snapshotSorter')
+const { getRelatedSnapshots, getExpiredSnapshots, getOverdueStatuses } = require('./lib/business/snapshotFilter')
 
 const zmanConfig = readConfig('./zman.yaml')
 
-const poolSnapshots = getRelatedSnapshots(zmanConfig)
+const snapshots = parseSnapshots(snapshotOutput)
+const snapshotsByPool = sortSnapshotsByPool(snapshots)
+
+const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
 
 const now = new Date()
 
