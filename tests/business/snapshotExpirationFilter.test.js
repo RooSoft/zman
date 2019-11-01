@@ -34,10 +34,10 @@ test('Should keep only expired largepool/whatever dailies', () => {
   const firstDate = new Date('2019-10-10')
   const firstExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, quantity, firstDate, poolSnapshots)
 
-  expect(firstExpiredSnapshotsSet.length).toBe(0)
+  expect(firstExpiredSnapshotsSet).toHaveLength(0)
 
   const secondDate = new Date('2019-11-10')
   const secondExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, quantity, secondDate, poolSnapshots)
 
-  expect(secondExpiredSnapshotsSet.length).toBe(2)
+  expect(secondExpiredSnapshotsSet).toHaveLength(2)
 })

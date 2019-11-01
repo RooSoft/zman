@@ -1,8 +1,5 @@
-const { readConfig } = require('../../lib/yaml')
-
 const { parseSnapshots } = require('../../lib/zfs/snapshotParser')
 const { sortSnapshotsByPool } = require('../../lib/business/snapshotSorter')
-const { getRelatedSnapshots } = require('../../lib/business/snapshotFilter')
 
 const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
@@ -20,13 +17,10 @@ Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   11
 
 
 test('Should correctly parse snapshots', () => {
-  const zmanConfig = readConfig('../../zman.yaml')
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
-
-  expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
-  expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(2)
-  expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(1)
+  expect(snapshotsByPool['largepool/whatever']).toHaveLength(8)
+  expect(snapshotsByPool['smallpool/zman']).toHaveLength(4)
 })
