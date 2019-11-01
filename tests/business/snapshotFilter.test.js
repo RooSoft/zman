@@ -20,7 +20,7 @@ Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   11
 
 
 test('Should sort out snapshots by pools and frequencies according to yaml config file', () => {
-  const zmanConfig = readConfig('../../zman.yaml')
+  const zmanConfig = readConfig('./zman.yaml')
 
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
@@ -34,7 +34,7 @@ test('Should sort out snapshots by pools and frequencies according to yaml confi
 })
 
 test('Should sort out expired snapshots', () => {
-  const zmanConfig = readConfig('../../zman.yaml')
+  const zmanConfig = readConfig('./zman.yaml')
 
   const now = new Date('2019-11-1')
 
@@ -62,7 +62,7 @@ test('Should sort out expired snapshots', () => {
 })
 
 test('Should sort out overdue statuses', () => {
-  const zmanConfig = readConfig('../../zman.yaml')
+  const zmanConfig = readConfig('./zman.yaml')
 
   const now = new Date('2019-11-1')
 
