@@ -33,7 +33,7 @@ test('Should sort out snapshots by pools and frequencies according to yaml confi
   expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
 })
 
-test('Should sort out snapshots by pools and frequencies according to yaml config file', () => {
+test('Should sort out expired snapshots', () => {
   const zmanConfig = readConfig('../../zman.yaml')
 
   const now = new Date('2019-11-1')
@@ -57,6 +57,35 @@ test('Should sort out snapshots by pools and frequencies according to yaml confi
 
   expiredSnapshotNames.map(expiredSnapshotName => {
     const example = expiredSnapshots.filter(snapshot => snapshot.name === expiredSnapshotName)
+    expect(example).toHaveLength(1)
+  })
+})
+
+test('Should sort out overdue statuses', () => {
+  const zmanConfig = readConfig('../../zman.yaml')
+
+  const now = new Date('2019-11-1')
+
+  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const overdueSnapshots = getOverdueStatuses(now, zmanConfig, poolSnapshots)
+
+  expect(overdueSnapshots).toHaveLength(4)
+
+  const overduePoolFrequencies = [
+    { pool: 'smallpool/zman', frequency: 'daily' },
+    { pool: 'smallpool/zman', frequency: 'hourly' },
+    { pool: 'largepool/whatever', frequency: 'daily' },
+    { pool: 'largepool/whatever', frequency: 'hourly' },
+  ]
+
+  overduePoolFrequencies.map(overduePoolFrequency => {
+    const example = overdueSnapshots.filter(overdueSnapshot => {
+      return (overdueSnapshot.pool === overduePoolFrequency.pool)
+        && (overdueSnapshot.frequency.type === overduePoolFrequency.frequency)
+    })
+
     expect(example).toHaveLength(1)
   })
 })
