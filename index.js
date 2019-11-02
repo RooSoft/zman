@@ -1,10 +1,14 @@
+//const args = require('./lib/commandLineArgumentsParser')()
+
 const { readConfig } = require('./lib/yaml')
-const snapshotOutput = require('./data/dummySnapshots')
+const { getSnapshots } = require('./lib/zfs/runner')
 const { parseSnapshots } = require('./lib/zfs/snapshotParser')
 const { sortSnapshotsByPool } = require('./lib/business/snapshotSorter')
 const { getRelatedSnapshots, getExpiredSnapshots, getOverdueStatuses } = require('./lib/business/snapshotFilter')
 
 const zmanConfig = readConfig('./zman.yaml')
+
+const snapshotOutput = getSnapshots()
 
 const snapshots = parseSnapshots(snapshotOutput)
 const snapshotsByPool = sortSnapshotsByPool(snapshots)
