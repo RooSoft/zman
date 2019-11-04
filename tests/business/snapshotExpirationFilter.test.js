@@ -3,11 +3,13 @@ const { readConfig } = require('../../lib/yaml')
 const { parseSnapshots } = require('../../lib/zfs/snapshotParser')
 const { sortSnapshotsByPool } = require('../../lib/business/snapshotSorter')
 const { getRelatedSnapshots } = require('../../lib/business/snapshotFilter')
+const { addExpirationDate } = require('../../lib/business/snapshotExpirationDateManager')
 
 const {
   filterActiveSnapshotsByDate,
   filterExpiredSnapshotsByDate
 } = require('../../lib/business/snapshotExpirationFilter')
+
 
 const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
@@ -26,20 +28,20 @@ Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   11
 test('Should keep only active largepool/whatever dailies', () => {
   const poolName = 'largepool/whatever'
   const frequencyType = 'daily'
-  const quantity = 30
 
   const zmanConfig = readConfig('./zman.yaml')
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)[poolName]
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  addExpirationDate(zmanConfig, poolSnapshots)
 
   const firstDate = new Date('2019-10-10')
-  const firstActiveSnapshotsSet = filterActiveSnapshotsByDate(frequencyType, quantity, firstDate, poolSnapshots)
+  const firstActiveSnapshotsSet = filterActiveSnapshotsByDate(frequencyType, firstDate, poolSnapshots[poolName])
 
   expect(firstActiveSnapshotsSet).toHaveLength(2)
 
   const secondDate = new Date('2019-11-10')
-  const secondActiveSnapshotsSet = filterActiveSnapshotsByDate(frequencyType, quantity, secondDate, poolSnapshots)
+  const secondActiveSnapshotsSet = filterActiveSnapshotsByDate(frequencyType, secondDate, poolSnapshots[poolName])
 
   expect(secondActiveSnapshotsSet).toHaveLength(0)
 })
@@ -47,20 +49,20 @@ test('Should keep only active largepool/whatever dailies', () => {
 test('Should keep only expired largepool/whatever dailies', () => {
   const poolName = 'largepool/whatever'
   const frequencyType = 'daily'
-  const quantity = 30
 
   const zmanConfig = readConfig('./zman.yaml')
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)[poolName]
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  addExpirationDate(zmanConfig, poolSnapshots)
 
   const firstDate = new Date('2019-10-10')
-  const firstExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, quantity, firstDate, poolSnapshots)
+  const firstExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, firstDate, poolSnapshots[poolName])
 
   expect(firstExpiredSnapshotsSet).toHaveLength(0)
 
   const secondDate = new Date('2019-11-10')
-  const secondExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, quantity, secondDate, poolSnapshots)
+  const secondExpiredSnapshotsSet = filterExpiredSnapshotsByDate(frequencyType, secondDate, poolSnapshots[poolName])
 
   expect(secondExpiredSnapshotsSet).toHaveLength(2)
 })

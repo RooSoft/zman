@@ -2,12 +2,14 @@ const { readConfig } = require('../../lib/yaml')
 
 const { parseSnapshots } = require('../../lib/zfs/snapshotParser')
 const { sortSnapshotsByPool } = require('../../lib/business/snapshotSorter')
+const { addExpirationDate } = require('../../lib/business/snapshotExpirationDateManager')
 const {
   getRelatedSnapshots,
   getActiveSnapshots,
   getExpiredSnapshots,
   getOverdueStatuses
 } = require('../../lib/business/snapshotFilter')
+
 
 const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
@@ -47,6 +49,8 @@ test('Should sort out active snapshots', () => {
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  addExpirationDate(zmanConfig, poolSnapshots)
+
   const activeSnapshots = getActiveSnapshots(now, zmanConfig, poolSnapshots)
 
   expect(activeSnapshots).toHaveLength(5)
@@ -73,6 +77,8 @@ test('Should sort out expired snapshots', () => {
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  addExpirationDate(zmanConfig, poolSnapshots)
+
   const expiredSnapshots = getExpiredSnapshots(now, zmanConfig, poolSnapshots)
 
   expect(expiredSnapshots).toHaveLength(7)
@@ -101,6 +107,8 @@ test('Should sort out overdue statuses', () => {
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  addExpirationDate(zmanConfig, poolSnapshots)
+
   const overdueSnapshots = getOverdueStatuses(now, zmanConfig, poolSnapshots)
 
   expect(overdueSnapshots).toHaveLength(4)
