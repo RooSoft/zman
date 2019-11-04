@@ -25,11 +25,7 @@ test('Should sort out snapshots by pools and frequencies according to yaml confi
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
-
-  console.dir(poolSnapshots)
 
   expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(1)
   expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(2)
