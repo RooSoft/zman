@@ -2,7 +2,12 @@ const { readConfig } = require('../../lib/yaml')
 
 const { parseSnapshots } = require('../../lib/zfs/snapshotParser')
 const { sortSnapshotsByPool } = require('../../lib/business/snapshotSorter')
-const { getRelatedSnapshots, getExpiredSnapshots, getOverdueStatuses } = require('../../lib/business/snapshotFilter')
+const {
+  getRelatedSnapshots,
+  getActiveSnapshots,
+  getExpiredSnapshots,
+  getOverdueStatuses
+} = require('../../lib/business/snapshotFilter')
 
 const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
@@ -32,6 +37,32 @@ test('Should sort out snapshots by pools and frequencies according to yaml confi
   expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(5)
   expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(5)
   expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
+})
+
+test('Should sort out active snapshots', () => {
+  const zmanConfig = readConfig('./zman.yaml')
+
+  const now = new Date('2019-11-1')
+
+  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const activeSnapshots = getActiveSnapshots(now, zmanConfig, poolSnapshots)
+
+  expect(activeSnapshots).toHaveLength(5)
+
+  const activeSnapshotNames = [
+    'largepool/whatever@zman-monthly-2019-09-28-14:14',
+    'largepool/whatever@zman-monthly-2019-10-28-14:14',
+    'smallpool/zman@zman-monthly-2019-08-29-14:14',
+    'smallpool/zman@zman-monthly-2019-09-29-14:14',
+    'smallpool/zman@zman-monthly-2019-10-29-14:15',
+  ]
+
+  activeSnapshotNames.map(activeSnapshotName => {
+    const example = activeSnapshots.filter(snapshot => snapshot.name === activeSnapshotName)
+    expect(example).toHaveLength(1)
+  })
 })
 
 test('Should sort out expired snapshots', () => {
