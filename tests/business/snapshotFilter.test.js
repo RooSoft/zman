@@ -32,7 +32,7 @@ Tue Oct 29  9:55 2019  smallpool/zman@2      -   112K         -       -         
 const ONE_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  9:39 2019  smallpool/zman@1      -   112K         -       -              -          -
 Tue Oct 29  9:55 2019  smallpool/zman@2      -   112K         -       -              -          -
-Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -`
+Tue Oct 31  14:14 2019  largepool/whatever@zman-monthly-2019-10-29-14:14      -   112K         -       -              -          -`
 
 
 test('Should get empty related snapshots object after parsing an empty snapshot set', () => {
@@ -76,18 +76,28 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
   expect(overdueStatuses).toMatchObject([
     {
       pool: 'smallpool/zman',
-      frequency: {
-        type: 'monthly',
-        quantity: 3
-      }
+      frequency: { type: 'monthly', quantity: 3 }
+    },
+    {
+      pool: 'smallpool/zman',
+      frequency: { type: 'daily', quantity: 31 }
+    },
+    {
+      pool: 'smallpool/zman',
+      frequency: { type: 'hourly', quantity: 24 }
     },
     {
       pool: 'largepool/whatever',
-      frequency: {
-        type: 'monthly',
-        quantity: 2
-      }
-    }
+      frequency: { type: 'monthly', quantity: 2 }
+    },
+    {
+      pool: 'largepool/whatever',
+      frequency: { type: 'daily', quantity: 33 }
+    },
+    {
+      pool: 'largepool/whatever',
+      frequency: { type: 'hourly', quantity: 24 }
+    },
   ])
 })
 
@@ -101,29 +111,35 @@ test('Should work properly on a set with only one hourly snapshot', () => {
   addExpirationDate(zmanConfig, poolSnapshots)
 
   expect(poolSnapshots['smallpool/zman']).toMatchObject({})
-  expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(1)
+  expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(0)
   expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(0)
-  expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(0)
+  expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(1)
 
-  const now = new Date('2019-10-29 14:30')
+  const now = new Date('2019-11-1 0:00')
 
   const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
 
   expect(overdueStatuses).toMatchObject([
     {
       pool: 'smallpool/zman',
-      frequency: {
-        type: 'monthly',
-        quantity: 3
-      }
+      frequency: { type: 'monthly', quantity: 3 }
+    },
+    {
+      pool: 'smallpool/zman',
+      frequency: { type: 'daily', quantity: 31 }
+    },
+    {
+      pool: 'smallpool/zman',
+      frequency: { type: 'hourly', quantity: 24 }
     },
     {
       pool: 'largepool/whatever',
-      frequency: {
-        type: 'monthly',
-        quantity: 2
-      }
+      frequency: { type: 'daily', quantity: 33 }
     },
+    {
+      pool: 'largepool/whatever',
+      frequency: { type: 'hourly', quantity: 24 }
+    }
   ])
 })
 
@@ -215,17 +231,18 @@ test('Should find overdue statuses', () => {
   expect(overdueStatuses).toMatchObject([
     {
       pool: 'smallpool/zman',
-      frequency: {
-        type: 'daily',
-        quantity: 31
-      }
+      frequency: { type: 'daily', quantity: 31 }
+    },
+    {
+      pool: 'smallpool/zman',
+      frequency: { type: 'hourly', quantity: 24 }
     },
     {
       pool: 'largepool/whatever',
-      frequency: {
-        type: 'daily',
-        quantity: 33
-      }
-    },
+      frequency: { type: 'daily', quantity: 33 }
+    }, {
+      pool: 'largepool/whatever',
+      frequency: { type: 'hourly', quantity: 24 }
+    }
   ])
 })
