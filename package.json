@@ -4,8 +4,7 @@
   "description": "ZFS snapshot manager",
   "main": "index.js",
   "scripts": {
-    "dev": "node --experimental-modules index.mjs",
-    "prod": "node --experimental-modules --no-warnings index.mjs",
+    "dev": "node index --config=./zman.yaml",
     "test": "jest --coverage",
     "buildLinux": "pkg --targets node12-linux-x64 --output=dist/linux/zman index.js",
     "buildMac": "pkg --targets node12-macos-x64 --output=dist/macos/zman index.js"
