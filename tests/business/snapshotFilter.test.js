@@ -30,7 +30,7 @@ Tue Oct 29  9:39 2019  smallpool/zman@1      -   112K         -       -         
 Tue Oct 29  9:55 2019  smallpool/zman@2      -   112K         -       -              -          -`
 
 
-test('Should work with an empty snapshot set', () => {
+test('Should get empty related snapshots object after parsing an empty snapshot set', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
   const snapshots = parseSnapshots(EMPTY_SNAPSHOT_OUTPUT)
@@ -40,6 +40,18 @@ test('Should work with an empty snapshot set', () => {
 
   expect(poolSnapshots).toMatchObject({})
 })
+
+test('Should return all possible overdue statuses on an empty snapshot set', () => {
+  const zmanConfig = readConfig('./zman.yaml')
+
+  const now = new Date('2019-11-1')
+
+  const overdueStatuses = getOverdueStatuses(now, zmanConfig, {})
+
+  expect(overdueStatuses).toHaveLength(6)
+})
+
+
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
   const zmanConfig = readConfig('./zman.yaml')
