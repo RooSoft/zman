@@ -11,7 +11,7 @@ const {
 } = require('../../lib/business/snapshotFilter')
 
 
-const DUMMY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
+const POPULATED_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
 Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -
 Tue Sep 27  14:14 2019  largepool/whatever@zman-daily-2019-09-27-14:14      -   112K         -       -              -          -
 Tue Sep 28  14:14 2019  largepool/whatever@zman-daily-2019-09-28-14:14      -   112K         -       -              -          -
@@ -25,11 +25,26 @@ Tue Aug 29  14:14 2019  smallpool/zman@zman-monthly-2019-08-29-14:14      -   11
 Tue Sept 29  14:14 2019  smallpool/zman@zman-monthly-2019-09-29-14:14      -   112K         -       -              -          -
 Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   112K         -       -              -          -`
 
+const EMPTY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
+Tue Oct 29  9:39 2019  smallpool/zman@1      -   112K         -       -              -          -
+Tue Oct 29  9:55 2019  smallpool/zman@2      -   112K         -       -              -          -`
 
-test('Should sort out snapshots by pools and frequencies according to yaml config file', () => {
+
+test('Should work with an empty snapshot set', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
-  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots(EMPTY_SNAPSHOT_OUTPUT)
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+
+  expect(poolSnapshots).toMatchObject({})
+})
+
+test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
+  const zmanConfig = readConfig('./zman.yaml')
+
+  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
@@ -41,12 +56,12 @@ test('Should sort out snapshots by pools and frequencies according to yaml confi
   expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
 })
 
-test('Should sort out active snapshots', () => {
+test('Should find active snapshots', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
   const now = new Date('2019-11-1')
 
-  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
@@ -69,12 +84,12 @@ test('Should sort out active snapshots', () => {
   })
 })
 
-test('Should sort out expired snapshots', () => {
+test('Should find expired snapshots', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
   const now = new Date('2019-11-1')
 
-  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
@@ -99,12 +114,12 @@ test('Should sort out expired snapshots', () => {
   })
 })
 
-test('Should sort out overdue statuses', () => {
+test('Should find overdue statuses', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
   const now = new Date('2019-11-1')
 
-  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
