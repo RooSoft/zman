@@ -41,6 +41,16 @@ test('Should get empty related snapshots object after parsing an empty snapshot 
   expect(poolSnapshots).toMatchObject({})
 })
 
+test('Should return an empty object trying to get expired snapshots on an empty snapshot set', () => {
+  const zmanConfig = readConfig('./zman.yaml')
+
+  const now = new Date('2019-11-1')
+
+  const expiredSnapshots = getExpiredSnapshots(now, zmanConfig, {})
+
+  expect(expiredSnapshots).toMatchObject({})
+})
+
 test('Should return an empty object trying to get active snapshots on an empty snapshot set', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
