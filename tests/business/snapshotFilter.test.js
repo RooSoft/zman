@@ -73,7 +73,22 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
 
   const overdueStatuses = getOverdueStatuses(now, zmanConfig, {})
 
-  expect(overdueStatuses).toHaveLength(6)
+  expect(overdueStatuses).toMatchObject([
+    {
+      pool: 'smallpool/zman',
+      frequency: {
+        type: 'monthly',
+        quantity: 3
+      }
+    },
+    {
+      pool: 'largepool/whatever',
+      frequency: {
+        type: 'monthly',
+        quantity: 2
+      }
+    }
+  ])
 })
 
 test('Should work properly on a set with only one hourly snapshot', () => {
@@ -94,7 +109,7 @@ test('Should work properly on a set with only one hourly snapshot', () => {
 
   const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
 
-  expect(overdueStatuses).toHaveLength(5)
+  expect(overdueStatuses).toHaveLength(2)
 })
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
@@ -180,23 +195,22 @@ test('Should find overdue statuses', () => {
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
 
-  const overdueSnapshots = getOverdueStatuses(now, zmanConfig, poolSnapshots)
+  const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
 
-  expect(overdueSnapshots).toHaveLength(4)
-
-  const overduePoolFrequencies = [
-    { pool: 'smallpool/zman', frequency: 'daily' },
-    { pool: 'smallpool/zman', frequency: 'hourly' },
-    { pool: 'largepool/whatever', frequency: 'daily' },
-    { pool: 'largepool/whatever', frequency: 'hourly' },
-  ]
-
-  overduePoolFrequencies.map(overduePoolFrequency => {
-    const example = overdueSnapshots.filter(overdueSnapshot => {
-      return (overdueSnapshot.pool === overduePoolFrequency.pool)
-        && (overdueSnapshot.frequency.type === overduePoolFrequency.frequency)
-    })
-
-    expect(example).toHaveLength(1)
-  })
+  expect(overdueStatuses).toMatchObject([
+    {
+      pool: 'smallpool/zman',
+      frequency: {
+        type: 'daily',
+        quantity: 31
+      }
+    },
+    {
+      pool: 'largepool/whatever',
+      frequency: {
+        type: 'daily',
+        quantity: 33
+      }
+    },
+  ])
 })
