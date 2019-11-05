@@ -29,6 +29,11 @@ const EMPTY_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   
 Tue Oct 29  9:39 2019  smallpool/zman@1      -   112K         -       -              -          -
 Tue Oct 29  9:55 2019  smallpool/zman@2      -   112K         -       -              -          -`
 
+const ONE_SNAPSHOT_OUTPUT = `CREATION               NAME              AVAIL   USED  USEDSNAP  USEDDS  USEDREFRESERV  USEDCHILD
+Tue Oct 29  9:39 2019  smallpool/zman@1      -   112K         -       -              -          -
+Tue Oct 29  9:55 2019  smallpool/zman@2      -   112K         -       -              -          -
+Tue Oct 29  14:14 2019  largepool/whatever@zman-hourly-2019-10-29-14:14      -   112K         -       -              -          -`
+
 
 test('Should get empty related snapshots object after parsing an empty snapshot set', () => {
   const zmanConfig = readConfig('./zman.yaml')
@@ -69,6 +74,23 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
   const overdueStatuses = getOverdueStatuses(now, zmanConfig, {})
 
   expect(overdueStatuses).toHaveLength(6)
+})
+
+test('Should work properly on a set with only one hourly snapshot', () => {
+  const zmanConfig = readConfig('./zman.yaml')
+
+  const snapshots = parseSnapshots(ONE_SNAPSHOT_OUTPUT)
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+
+  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  addExpirationDate(zmanConfig, poolSnapshots)
+
+  console.dir(poolSnapshots)
+
+  expect(poolSnapshots['smallpool/zman']).toMatchObject({})
+  expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(1)
+  expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(0)
+  expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(0)
 })
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
