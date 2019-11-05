@@ -41,6 +41,16 @@ test('Should get empty related snapshots object after parsing an empty snapshot 
   expect(poolSnapshots).toMatchObject({})
 })
 
+test('Should return an empty object trying to get active snapshots on an empty snapshot set', () => {
+  const zmanConfig = readConfig('./zman.yaml')
+
+  const now = new Date('2019-11-1')
+
+  const activeSnapshots = getActiveSnapshots(now, zmanConfig, {})
+
+  expect(activeSnapshots).toMatchObject({})
+})
+
 test('Should return all possible overdue statuses on an empty snapshot set', () => {
   const zmanConfig = readConfig('./zman.yaml')
 
@@ -50,8 +60,6 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
 
   expect(overdueStatuses).toHaveLength(6)
 })
-
-
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
   const zmanConfig = readConfig('./zman.yaml')
