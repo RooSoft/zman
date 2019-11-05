@@ -85,12 +85,16 @@ test('Should work properly on a set with only one hourly snapshot', () => {
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
 
-  console.dir(poolSnapshots)
-
   expect(poolSnapshots['smallpool/zman']).toMatchObject({})
   expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(1)
   expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(0)
   expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(0)
+
+  const now = new Date('2019-10-29 14:30')
+
+  const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
+
+  expect(overdueStatuses).toHaveLength(5)
 })
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
