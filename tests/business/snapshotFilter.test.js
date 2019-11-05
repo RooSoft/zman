@@ -109,7 +109,22 @@ test('Should work properly on a set with only one hourly snapshot', () => {
 
   const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
 
-  expect(overdueStatuses).toHaveLength(2)
+  expect(overdueStatuses).toMatchObject([
+    {
+      pool: 'smallpool/zman',
+      frequency: {
+        type: 'monthly',
+        quantity: 3
+      }
+    },
+    {
+      pool: 'largepool/whatever',
+      frequency: {
+        type: 'monthly',
+        quantity: 2
+      }
+    },
+  ])
 })
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
