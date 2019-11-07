@@ -22,3 +22,9 @@ test('Should fail to load nonexisting config file', () => {
     readConfig('tests/config/doNotExist.yaml')
   }).toThrow()
 })
+
+test('Should work even with a empty pool list config file' , () => {
+  expect(() => {
+    readConfig('tests/config/emptyPoolList.yaml')
+  }).not.toThrow()
+})
