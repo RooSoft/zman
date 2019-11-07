@@ -1,4 +1,5 @@
 const { readConfig } = require('../lib/yaml')
+const { ConfigError } = require('../lib/errors')
 
 test('Should be able to read config file', () => {
   const zmanConfig = readConfig('tests/config/zman.yaml')
@@ -18,19 +19,25 @@ test('Should be able to read config file', () => {
 })
 
 test('Should fail to load nonexisting config file', () => {
+  const configFile = 'tests/config/doNotExist.yaml'
+
   expect(() => {
-    readConfig('tests/config/doNotExist.yaml')
-  }).toThrow()
+    readConfig(configFile)
+  }).toThrow(new ConfigError(`Config file not found: ${configFile}`))
 })
 
-test('Should work even with a empty pool list config file' , () => {
+test('Should fail on empty pool list' , () => {
+  const configFile = 'tests/config/emptyPoolList.yaml'
+
   expect(() => {
-    readConfig('tests/config/emptyPoolList.yaml')
-  }).not.toThrow()
+    readConfig(configFile)
+  }).toThrow(new ConfigError(`No pool found in ${configFile}`))
 })
 
-test('Should not crash on an empty config file' , () => {
+test('Should fail on an empty config file' , () => {
+  const configFile = 'tests/config/emptyFile.yaml'
+
   expect(() => {
-    readConfig('tests/config/emptyFile.yaml')
-  }).not.toThrow()
+    readConfig(configFile)
+  }).toThrow(new ConfigError(`${configFile} doesn't contain any pool configuration`))
 })
