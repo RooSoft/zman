@@ -1,4 +1,5 @@
 ---
+zfs: ~/.bin/zfs
 pools:
 - name: smallpool/zman
   frequencies:
