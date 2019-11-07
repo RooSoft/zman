@@ -36,7 +36,7 @@ Tue Oct 31  14:14 2019  largepool/whatever@zman-monthly-2019-10-29-14:14      - 
 
 
 test('Should get empty related snapshots object after parsing an empty snapshot set', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const snapshots = parseSnapshots(EMPTY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
@@ -47,7 +47,7 @@ test('Should get empty related snapshots object after parsing an empty snapshot 
 })
 
 test('Should return an empty object trying to get expired snapshots on an empty snapshot set', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const now = new Date('2019-11-1')
 
@@ -57,7 +57,7 @@ test('Should return an empty object trying to get expired snapshots on an empty 
 })
 
 test('Should return an empty object trying to get active snapshots on an empty snapshot set', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const now = new Date('2019-11-1')
 
@@ -67,7 +67,7 @@ test('Should return an empty object trying to get active snapshots on an empty s
 })
 
 test('Should return all possible overdue statuses on an empty snapshot set', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const now = new Date('2019-11-1')
 
@@ -102,7 +102,7 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
 })
 
 test('Should work properly on a set with only one hourly snapshot', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const snapshots = parseSnapshots(ONE_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
@@ -144,7 +144,7 @@ test('Should work properly on a set with only one hourly snapshot', () => {
 })
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
@@ -159,7 +159,7 @@ test('Should sort snapshots by pools and frequencies according to yaml config fi
 })
 
 test('Should find active snapshots', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const now = new Date('2019-11-1')
 
@@ -187,7 +187,7 @@ test('Should find active snapshots', () => {
 })
 
 test('Should find expired snapshots', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const now = new Date('2019-11-1')
 
@@ -217,7 +217,7 @@ test('Should find expired snapshots', () => {
 })
 
 test('Should find overdue statuses', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   const now = new Date('2019-11-1')
 

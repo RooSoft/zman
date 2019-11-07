@@ -29,7 +29,7 @@ test('Should keep only active largepool/whatever dailies', () => {
   const poolName = 'largepool/whatever'
   const frequencyType = 'daily'
 
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
@@ -50,7 +50,7 @@ test('Should keep only expired largepool/whatever dailies', () => {
   const poolName = 'largepool/whatever'
   const frequencyType = 'daily'
 
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)

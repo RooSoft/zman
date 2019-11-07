@@ -1,7 +1,7 @@
 const { readConfig } = require('../lib/yaml')
 
 test('Should be able to read config file', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
   expect(zmanConfig).toHaveProperty('pools')
   expect(zmanConfig.pools).toHaveLength(2)
@@ -19,6 +19,6 @@ test('Should be able to read config file', () => {
 
 test('Should fail to load nonexisting config file', () => {
   expect(() => {
-    readConfig('../zman.yaml')
+    readConfig('tests/config/doNotExist.yaml')
   }).toThrow()
 })

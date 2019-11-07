@@ -20,7 +20,7 @@ Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   11
 
 
 test('Should correctly parse snapshots', () => {
-  const zmanConfig = readConfig('./zman.yaml')
+  const zmanConfig = readConfig('tests/config/zman.yaml')
   const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
