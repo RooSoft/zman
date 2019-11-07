@@ -2,18 +2,5 @@
 pools:
 - name: smallpool/zman
   frequencies:
-    - type: monthly
-      quantity: 3
     - type: daily
       quantity: 31
-    - type: hourly
-      quantity: 24
-
-- name: largepool/whatever
-  frequencies:
-    - type: monthly
-      quantity: 2
-    - type: daily
-      quantity: 33
-    - type: hourly
-      quantity: 24
