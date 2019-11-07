@@ -28,3 +28,9 @@ test('Should work even with a empty pool list config file' , () => {
     readConfig('tests/config/emptyPoolList.yaml')
   }).not.toThrow()
 })
+
+test('Should not crash on an empty config file' , () => {
+  expect(() => {
+    readConfig('tests/config/emptyFile.yaml')
+  }).not.toThrow()
+})
