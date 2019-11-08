@@ -290,4 +290,24 @@ test('Should filter overdue statuses by frequency', () => {
   }])
 })
 
+test('Should filter overdue statuses by pool', () => {
+  const zmanConfig = readConfig('tests/config/zman.yaml')
 
+  const now = new Date('2019-11-1')
+  const poolName = 'largepool/whatever'
+
+  const snapshots = parseSnapshots({ poolName, output: POPULATED_SNAPSHOT_OUTPUT })
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
+  addExpirationDate(zmanConfig, poolSnapshots)
+
+  const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, poolName, snapshots: poolSnapshots })
+
+  expect(overdueStatuses).toMatchObject([{
+    pool: 'largepool/whatever',
+    frequency: { type: 'daily', quantity: 33 }
+  }, {
+    pool: 'largepool/whatever',
+    frequency: { type: 'hourly', quantity: 24 }
+  }])
+})
