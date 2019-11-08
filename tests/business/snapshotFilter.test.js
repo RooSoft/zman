@@ -38,7 +38,7 @@ Tue Oct 31  14:14 2019  largepool/whatever@zman-monthly-2019-10-29-14:14      - 
 test('Should get empty related snapshots object after parsing an empty snapshot set', () => {
   const zmanConfig = readConfig('tests/config/zman.yaml')
 
-  const snapshots = parseSnapshots(EMPTY_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: EMPTY_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
@@ -71,7 +71,7 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
 
   const now = new Date('2019-11-1')
 
-  const overdueStatuses = getOverdueStatuses(now, zmanConfig, {})
+  const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: {} })
 
   expect(overdueStatuses).toMatchObject([
     {
@@ -104,7 +104,7 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
 test('Should work properly on a set with only one hourly snapshot', () => {
   const zmanConfig = readConfig('tests/config/zman.yaml')
 
-  const snapshots = parseSnapshots(ONE_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: ONE_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
@@ -117,7 +117,7 @@ test('Should work properly on a set with only one hourly snapshot', () => {
 
   const now = new Date('2019-11-1 0:00')
 
-  const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
+  const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: poolSnapshots })
 
   expect(overdueStatuses).toMatchObject([
     {
@@ -146,7 +146,7 @@ test('Should work properly on a set with only one hourly snapshot', () => {
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
   const zmanConfig = readConfig('tests/config/zman.yaml')
 
-  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
@@ -163,7 +163,7 @@ test('Should find active snapshots', () => {
 
   const now = new Date('2019-11-1')
 
-  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
@@ -191,7 +191,7 @@ test('Should find expired snapshots', () => {
 
   const now = new Date('2019-11-1')
 
-  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
@@ -221,12 +221,12 @@ test('Should find overdue statuses', () => {
 
   const now = new Date('2019-11-1')
 
-  const snapshots = parseSnapshots(POPULATED_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
   const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
   addExpirationDate(zmanConfig, poolSnapshots)
 
-  const overdueStatuses = getOverdueStatuses(now, zmanConfig, poolSnapshots)
+  const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: poolSnapshots })
 
   expect(overdueStatuses).toMatchObject([
     {

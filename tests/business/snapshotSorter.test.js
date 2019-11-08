@@ -17,7 +17,7 @@ Tue Oct 29  14:15 2019  smallpool/zman@zman-monthly-2019-10-29-14:15      -   11
 
 
 test('Should correctly sort snapshots by pool', () => {
-  const snapshots = parseSnapshots(DUMMY_SNAPSHOT_OUTPUT)
+  const snapshots = parseSnapshots({ output: DUMMY_SNAPSHOT_OUTPUT })
 
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
