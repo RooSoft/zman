@@ -41,7 +41,7 @@ test('Should get empty related snapshots object after parsing an empty snapshot 
   const snapshots = parseSnapshots({ output: EMPTY_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
 
   expect(poolSnapshots).toMatchObject({})
 })
@@ -107,7 +107,7 @@ test('Should work properly on a set with only one hourly snapshot', () => {
   const snapshots = parseSnapshots({ output: ONE_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
   addExpirationDate(zmanConfig, poolSnapshots)
 
   expect(poolSnapshots['smallpool/zman']).toMatchObject({})
@@ -149,12 +149,41 @@ test('Should sort snapshots by pools and frequencies according to yaml config fi
   const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
 
   expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(1)
   expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(2)
   expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(5)
+  expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
+})
+
+test('Should filter snapshots by frequency', () => {
+  const zmanConfig = readConfig('tests/config/zman.yaml')
+
+  const frequency = 'monthly'
+
+  const snapshots = parseSnapshots({ frequency, output: POPULATED_SNAPSHOT_OUTPUT })
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
+
+  expect(poolSnapshots['largepool/whatever']['hourly']).toHaveLength(0)
+  expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(0)
   expect(poolSnapshots['largepool/whatever']['monthly']).toHaveLength(5)
+  expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
+})
+
+test('Should filter snapshots by pool name', () => {
+  const zmanConfig = readConfig('tests/config/zman.yaml')
+
+  const poolName = 'smallpool/zman'
+
+  const snapshots = parseSnapshots({ poolName, poolName, output: POPULATED_SNAPSHOT_OUTPUT })
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, poolName, snapshotsByPool })
+
+  expect(poolSnapshots['largepool/whatever']).not.toBeDefined()
   expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
 })
 
@@ -165,7 +194,7 @@ test('Should find active snapshots', () => {
 
   const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
   addExpirationDate(zmanConfig, poolSnapshots)
 
   const activeSnapshots = getActiveSnapshots(now, zmanConfig, poolSnapshots)
@@ -193,7 +222,7 @@ test('Should find expired snapshots', () => {
 
   const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
   addExpirationDate(zmanConfig, poolSnapshots)
 
   const expiredSnapshots = getExpiredSnapshots(now, zmanConfig, poolSnapshots)
@@ -223,7 +252,7 @@ test('Should find overdue statuses', () => {
 
   const snapshots = parseSnapshots({ output: POPULATED_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
   addExpirationDate(zmanConfig, poolSnapshots)
 
   const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: poolSnapshots })
@@ -232,12 +261,10 @@ test('Should find overdue statuses', () => {
     {
       pool: 'smallpool/zman',
       frequency: { type: 'daily', quantity: 31 }
-    },
-    {
+    },{
       pool: 'smallpool/zman',
       frequency: { type: 'hourly', quantity: 24 }
-    },
-    {
+    },{
       pool: 'largepool/whatever',
       frequency: { type: 'daily', quantity: 33 }
     }, {

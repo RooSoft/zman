@@ -24,7 +24,7 @@ test('Should correctly parse snapshots', () => {
   const snapshots = parseSnapshots({ output: DUMMY_SNAPSHOT_OUTPUT })
   const snapshotsByPool = sortSnapshotsByPool(snapshots)
 
-  const poolSnapshots = getRelatedSnapshots(zmanConfig, snapshotsByPool)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
 
   expect(poolSnapshots['smallpool/zman']['monthly']).toHaveLength(4)
   expect(poolSnapshots['largepool/whatever']['daily']).toHaveLength(2)
