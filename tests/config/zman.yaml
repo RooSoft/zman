@@ -9,6 +9,8 @@ pools:
     - type: hourly
       quantity: 24
 
+- name: mediumpool/unused
+
 - name: largepool/whatever
   frequencies:
     - type: monthly
@@ -17,3 +19,4 @@ pools:
       quantity: 33
     - type: hourly
       quantity: 24
+
