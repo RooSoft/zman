@@ -73,32 +73,30 @@ test('Should return all possible overdue statuses on an empty snapshot set', () 
 
   const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: {} })
 
-  expect(overdueStatuses).toMatchObject([
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'monthly', quantity: 3 }
-    },
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'daily', quantity: 31 }
-    },
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'hourly', quantity: 24 }
-    },
-    {
-      pool: 'largepool/whatever',
-      frequency: { type: 'monthly', quantity: 2 }
-    },
-    {
-      pool: 'largepool/whatever',
-      frequency: { type: 'daily', quantity: 33 }
-    },
-    {
-      pool: 'largepool/whatever',
-      frequency: { type: 'hourly', quantity: 24 }
-    },
-  ])
+  expect(overdueStatuses).toMatchObject([{
+    pool: 'smallpool/zman',
+    frequency: { type: 'monthly', quantity: 3 }
+  },
+  {
+    pool: 'smallpool/zman',
+    frequency: { type: 'daily', quantity: 31 }
+  },
+  {
+    pool: 'smallpool/zman',
+    frequency: { type: 'hourly', quantity: 24 }
+  },
+  {
+    pool: 'largepool/whatever',
+    frequency: { type: 'monthly', quantity: 2 }
+  },
+  {
+    pool: 'largepool/whatever',
+    frequency: { type: 'daily', quantity: 33 }
+  },
+  {
+    pool: 'largepool/whatever',
+    frequency: { type: 'hourly', quantity: 24 }
+  }])
 })
 
 test('Should work properly on a set with only one hourly snapshot', () => {
@@ -119,28 +117,26 @@ test('Should work properly on a set with only one hourly snapshot', () => {
 
   const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: poolSnapshots })
 
-  expect(overdueStatuses).toMatchObject([
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'monthly', quantity: 3 }
-    },
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'daily', quantity: 31 }
-    },
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'hourly', quantity: 24 }
-    },
-    {
-      pool: 'largepool/whatever',
-      frequency: { type: 'daily', quantity: 33 }
-    },
-    {
-      pool: 'largepool/whatever',
-      frequency: { type: 'hourly', quantity: 24 }
-    }
-  ])
+  expect(overdueStatuses).toMatchObject([{
+    pool: 'smallpool/zman',
+    frequency: { type: 'monthly', quantity: 3 }
+  },
+  {
+    pool: 'smallpool/zman',
+    frequency: { type: 'daily', quantity: 31 }
+  },
+  {
+    pool: 'smallpool/zman',
+    frequency: { type: 'hourly', quantity: 24 }
+  },
+  {
+    pool: 'largepool/whatever',
+    frequency: { type: 'daily', quantity: 33 }
+  },
+  {
+    pool: 'largepool/whatever',
+    frequency: { type: 'hourly', quantity: 24 }
+  }])
 })
 
 test('Should sort snapshots by pools and frequencies according to yaml config file', () => {
@@ -257,19 +253,41 @@ test('Should find overdue statuses', () => {
 
   const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, snapshots: poolSnapshots })
 
-  expect(overdueStatuses).toMatchObject([
-    {
-      pool: 'smallpool/zman',
-      frequency: { type: 'daily', quantity: 31 }
-    },{
-      pool: 'smallpool/zman',
-      frequency: { type: 'hourly', quantity: 24 }
-    },{
-      pool: 'largepool/whatever',
-      frequency: { type: 'daily', quantity: 33 }
-    }, {
-      pool: 'largepool/whatever',
-      frequency: { type: 'hourly', quantity: 24 }
-    }
-  ])
+  expect(overdueStatuses).toMatchObject([{
+    pool: 'smallpool/zman',
+    frequency: { type: 'daily', quantity: 31 }
+  }, {
+    pool: 'smallpool/zman',
+    frequency: { type: 'hourly', quantity: 24 }
+  }, {
+    pool: 'largepool/whatever',
+    frequency: { type: 'daily', quantity: 33 }
+  }, {
+    pool: 'largepool/whatever',
+    frequency: { type: 'hourly', quantity: 24 }
+  }])
 })
+
+test('Should filter overdue statuses by frequency', () => {
+  const zmanConfig = readConfig('tests/config/zman.yaml')
+
+  const now = new Date('2019-11-1')
+  const frequency = 'daily'
+
+  const snapshots = parseSnapshots({ frequency, output: POPULATED_SNAPSHOT_OUTPUT })
+  const snapshotsByPool = sortSnapshotsByPool(snapshots)
+  const poolSnapshots = getRelatedSnapshots({ zmanConfig, snapshotsByPool })
+  addExpirationDate(zmanConfig, poolSnapshots)
+
+  const overdueStatuses = getOverdueStatuses({ date: now, zmanConfig, frequency, snapshots: poolSnapshots })
+
+  expect(overdueStatuses).toMatchObject([{
+    pool: 'smallpool/zman',
+    frequency: { type: 'daily', quantity: 31 }
+  }, {
+    pool: 'largepool/whatever',
+    frequency: { type: 'daily', quantity: 33 }
+  }])
+})
+
+
