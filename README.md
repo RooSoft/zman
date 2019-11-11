@@ -1,90 +1,36 @@
 # zman
 
-Open source tool automating ZFS snapshot creation and expiration based on a simple configuration file.
+Open source tool automating ZFS snapshot creation and expiration based on your scheduling needs.
 
 ## Frequency based
 
 Snapshot creation schedule could be *hourly*, *daily* or *monthly*. Each of these frequency types can retain a given quantity of snapshots before expiring them.
 
-## Commands
+# How to install
 
-### status
+Follow these steps to install zman on your system
 
-Displays active and expired snapshots along with pools overdue for a new snapshot.
+## Get it
 
-### renew
+Two choices
 
-Renews pools found in the overdue section of the status command.
+- Download [Linux](https://github.com/RooSoft/zman/releases/download/0.1/zman-0.1.0-linux-x64.tgz), [macOS](https://github.com/RooSoft/zman/releases/download/0.1/zman-0.1.0-macos-x64.tgz) or [windows](https://github.com/RooSoft/zman/releases/download/0.1/zman-0.1.0-windows-x64.zip) version
 
-### purge
+- [Build it yourself](https://github.com/RooSoft/zman/wiki/Build)
 
-Destroys snapshots considered as expired based on the configuration file.
+## Install the binaries
 
-## Driven by cron
+On Linux or macOS, just copy the `zman` executable to the `/usr/local/sbin` folder. On Windows,  make sure it's in the path.
 
-Monitoring is done by calling zman on a timely basis, which could be done by simple cron jobs.
+## Configure
 
-### Example
+Refer to [this scenario](https://github.com/RooSoft/zman/wiki/Scenario)
 
-```cron
-0 * * * * /usr/local/sbin/zman renew
-0 * * * * /usr/local/sbin/zman purge
-```
-
-## Configuration file
-
-By default, zman looks for it at `/etc/zman/zman.yaml`, but could be specified with the -c command like in this example:
-
-```bash
-zman status -c=~/zman.yaml
-```
-
-This configuration files contains two top level keys: *zfs* and *pools*.
-
-- zfs: *(optional)* location of the zfs executable
-- pools: an array of these
-  - name: name of a pool to be monitored
-  - frequency: array of snapshot schedules
-    - type: *monthly*, *daily* or *hourly*
-    - quantity: number of snapshots until considered expired
-
-```yaml
----
-zfs: /sbin/zfs
-pools:
-- name: smallpool/zman
-  frequencies:
-    - type: monthly
-      quantity: 3
-    - type: daily
-      quantity: 31
-    - type: hourly
-      quantity: 24
-
-- name: largepool/vm-503-disk-0
-  frequencies:
-    - type: daily
-      quantity: 31
-    - type: hourly
-      quantity: 24
-```
-
-In this example, zman monitors two pools: *smallpool/zman* and *largepool/vm-503-disk-0*.
-
-#### smallpool/zman
-
-This configuration will snapshot the pool every hour, keeping each of those for a day. Other snapshots are taken every day, keeping them longer, for a period of 31 days. It is also snapshotting once a month, keeping those for a bit longer: 3 months.
-
-#### largepool/whatever
-
-Same snapshot strategy as *smallpool/zman* but no monthly schedule.
-
-
-## License ##
+# License
 
 The MIT License (MIT)
 
-Copyright (c) 2019 Marc Lacoursière
+Copyright (c) 2019 RooSoft Computing inc.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
