@@ -8,7 +8,7 @@ Snapshot creation schedule could be *hourly*, *daily* or *monthly*. Each of thes
 
 # How to install
 
-Follow these steps to install zman on your system
+Follow these steps to install zman on your system.
 
 ## Get it
 
@@ -24,7 +24,7 @@ On Linux or macOS, just copy the `zman` executable to the `/usr/local/sbin` fold
 
 ## Configure
 
-Refer to [this scenario](https://github.com/RooSoft/zman/wiki/Scenario)
+Refer to [this scenario](https://github.com/RooSoft/zman/wiki/Scenario).
 
 # License
 
